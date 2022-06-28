@@ -1,0 +1,12 @@
+.idea
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+.build
+.env
+.env.dev
+.env.staging
+package-lock.json

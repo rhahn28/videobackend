@@ -1,0 +1,59 @@
+service: ${file(package.json):name}
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-tscpaths # should be after serverless-plugin-typescript
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+package:
+  individually: true
+  exclude:
+    - .build/**
+    - api/**
+    - db/**
+
+provider:
+  name: aws
+  profile: metasalt
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  region: ${env:REGION, 'us-east-1'}
+  versionFunctions: false
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - mobiletargeting:*
+            - sns:*
+            - cognito-idp:*
+            - s3:*
+            - dynamodb:*
+          Resource: "*"
+  environment:
+    STAGE: ${self:provider.stage}
+
+functions:
+  api:
+    handler: functions/api.handler
+    timeout: 30
+    memorySize: 3008
+    package:
+      include:
+        - api/**
+        - db/**
+    events:
+      - http:
+          method: ANY
+          path: /
+          cors: true
+      - http:
+          method: ANY
+          path: '{proxy+}'
+          cors: true
+
+custom:
+  dotenv:
+    useDotenv: true
+    logging: false
