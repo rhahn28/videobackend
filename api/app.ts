@@ -5,6 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as logger from 'morgan';
 import * as cors from 'cors';
 import * as swaggerJsdoc from 'swagger-jsdoc';
+import { routes } from './routes';
 
 const app: Application = express();
 
@@ -14,6 +15,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(awsServerlessExpressMiddleware.eventContext());
+
+for (const route of routes) {
+  const { method, path, middleware, handler } = route;
+  app[method](path, ...(middleware ? [middleware, handler] : [handler]));
+}
 
 // error handler
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
