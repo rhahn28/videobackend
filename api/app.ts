@@ -6,6 +6,7 @@ import * as logger from 'morgan';
 import * as cors from 'cors';
 import * as swaggerJsdoc from 'swagger-jsdoc';
 import { routes } from './routes';
+import { NotFoundError } from './utils/errors';
 
 const app: Application = express();
 
@@ -20,6 +21,11 @@ for (const route of routes) {
   const { method, path, middleware, handler } = route;
   app[method](path, ...(middleware ? [middleware, handler] : [handler]));
 }
+
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  next(new NotFoundError('Endpoint not found'));
+});
 
 // error handler
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
