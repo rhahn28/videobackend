@@ -7,6 +7,8 @@ import * as cors from 'cors';
 import * as swaggerJsdoc from 'swagger-jsdoc';
 import { routes } from './routes';
 import { NotFoundError } from './utils/errors';
+import { swaggerHTML, swaggerOptions } from './swaggerConfig';
+import { config } from '../config';
 
 const app: Application = express();
 
@@ -21,6 +23,14 @@ for (const route of routes) {
   const { method, path, middleware, handler } = route;
   app[method](path, ...(middleware ? [middleware, handler] : [handler]));
 }
+
+app.use(config.swagger.path, (req, res) => {
+  const host = `${config.isLocal ? `http` : `https`}://${req.headers.host}`;
+  res.send(JSON.stringify(swaggerJsdoc(swaggerOptions(host))));
+});
+app.use(config.swagger.docsPath, (req, res) => {
+  res.send(swaggerHTML);
+});
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
