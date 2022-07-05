@@ -15,7 +15,6 @@ package:
 
 provider:
   name: aws
-  profile: metasalt
   runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
   region: ${env:REGION, 'us-east-1'}

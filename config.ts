@@ -7,6 +7,6 @@ export const config = {
   s3Bucket: process.env.S3_BUCKET_NAME,
   swagger: {
     path: '/swagger',
-    docsPath: '/api-docs',
+    docsPath: '/api',
   },
 };
